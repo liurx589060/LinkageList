@@ -244,7 +244,7 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
             }
             mTaitouAdapter.setOtherHeadModel((HeadModel) mTaitouAdapter.getData().get(position));
 
-            return false;
+            return true;
         }
     }
 }
