@@ -1,8 +1,9 @@
 package com.rx.linklib;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import java.util.List;
  */
 
 public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
+    private Activity mActivity;
+
     private AbsLinkHandle mLinkHandle;
     private RecyclerView mOtherRecyclerView;
     private RecyclerView mMainRecyclerView;
@@ -27,7 +30,9 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
     private MainOnScrollListener mMainScrollListener;
     private OtherOnTouchListener mOtherOnTouchListener;
 
-    public <M extends RecyclerView.ViewHolder> LinkAdapter(List list,RecyclerView otherRecyclerView,AbsLinkHandle<M> handle) {
+    public <M extends RecyclerView.ViewHolder> LinkAdapter(Activity activity,List list
+            ,RecyclerView otherRecyclerView,AbsLinkHandle<M> handle) {
+        mActivity = activity;
         mLinkHandle = handle;
         mOtherRecyclerView = otherRecyclerView;
         mDataList = new ArrayList<>();
@@ -52,6 +57,10 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
             }
         }
         return list;
+    }
+
+    public HeadModel getCurrentHeadModel() {
+        return mTaitouAdapter.getCurrentHeadModel();
     }
 
     public List<Integer> getHeadPosList() {
@@ -140,10 +149,18 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
             }
         }
 
+        public HeadModel getCurrentHeadModel() {
+            return mHeadModel;
+        }
+
         public void setOtherHeadModel(HeadModel headModel) {
             mHeadModel = headModel;
             if(mPreHeadModel != mHeadModel) {
-                notifyDataSetChanged();
+                final int preIndex = mDateList.indexOf(mPreHeadModel);
+                final int currentIndex = mDateList.indexOf(mHeadModel);
+                notifyItemChanged(preIndex);
+                notifyItemChanged(currentIndex);
+
                 mPreHeadModel = mHeadModel;
             }
         }

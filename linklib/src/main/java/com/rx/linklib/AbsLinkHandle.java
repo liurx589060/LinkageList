@@ -11,6 +11,8 @@ import java.util.List;
 
 public abstract class AbsLinkHandle<T extends RecyclerView.ViewHolder> {
 
+    //public abstract void onOtherItemChanged(RecyclerView.ViewHolder preViewHolder, RecyclerView.ViewHolder currentViewHoder);
+
     public abstract void getOtherData(List<HeadModel> otherDataList);
 
     public abstract T onOtherCreateViewHolder(ViewGroup parent, int viewType);

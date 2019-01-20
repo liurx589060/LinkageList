@@ -1,5 +1,6 @@
 package com.rx.linkagelist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -178,9 +179,9 @@ public class MainActivity extends AppCompatActivity {
         private LayoutInflater mLayoutInflater;
         private String strPre = "";
 
-        public MainAdapter(Context context,List<String> date,RecyclerView recyclerView,AbsLinkHandle linkHandle) {
-            super(date,recyclerView,linkHandle);
-            mLayoutInflater = LayoutInflater.from(context);
+        public MainAdapter(Activity activity, List<String> date, RecyclerView recyclerView, AbsLinkHandle linkHandle) {
+            super(activity,date,recyclerView,linkHandle);
+            mLayoutInflater = LayoutInflater.from(activity);
         }
 
         @Override
