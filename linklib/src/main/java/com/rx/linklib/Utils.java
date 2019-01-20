@@ -1,15 +1,31 @@
-package linkagelist.rx.com.linkagelist;
+package com.rx.linklib;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 
+import java.util.regex.Pattern;
+
 /**
  * Created by Administrator on 2019/1/19.
  */
 
 public class Utils {
+    public enum ELetterType {
+        /**
+         * 只输出字符
+         */
+        LETTER_ONLY_CHARACTER,
+        /**
+         * 输出所有，不转化
+         */
+        LETTER_ALL, //当不为字母的用#代替（数字也用#代替）
+        /**
+         * //输出为字母或数字
+         */
+        LETTER_NUM,
+    }
 
     /**
      * 获取汉字字符串的首字母，英文字符不变
@@ -40,6 +56,14 @@ public class Utils {
      * 获取汉字字符串的第一个字母
      */
     public static String getPinYinFirstLetter(String str) {
+       return getPinYinFirstLetter(str,ELetterType.LETTER_ALL);
+    }
+
+    /**
+     * 获取汉字字符串的第一个字母
+     * isNotLetterByOther  true:当不是
+     */
+    public static String getPinYinFirstLetter(String str,ELetterType eLetterType) {
         StringBuffer sb = new StringBuffer();
         sb.setLength(0);
         char c = str.charAt(0);
@@ -49,7 +73,22 @@ public class Utils {
         } else {
             sb.append(c);
         }
-        return sb.toString();
+
+        String result = sb.toString().toUpperCase();
+        if(eLetterType == ELetterType.LETTER_ALL) {
+
+        }else if(eLetterType == ELetterType.LETTER_NUM) {
+            Pattern pattern = Pattern.compile("[a-z0-9A-Z]*");
+            if(!pattern.matcher(result).matches()) {
+                result = "#";
+            }
+        }else if(eLetterType == ELetterType.LETTER_ONLY_CHARACTER) {
+            Pattern pattern = Pattern.compile("[a-zA-Z]*");
+            if(!pattern.matcher(result).matches()) {
+                result = "#";
+            }
+        }
+        return result;
     }
 
     /**
