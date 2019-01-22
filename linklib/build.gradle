@@ -27,5 +27,5 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     api 'com.android.support:recyclerview-v7:26.1.0'
     //汉字转拼音
-    api 'com.belerweb:pinyin4j:2.5.0'
+    //api 'com.belerweb:pinyin4j:2.5.0'
 }
