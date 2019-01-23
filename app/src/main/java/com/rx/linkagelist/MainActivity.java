@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
             "刘备","张飞","关羽","A","1245888","@dser得分","B","C","D","E","F","G","H","I","J","K","!","~","#","$","%","^",
             "&","*","(",")","_","-","+","=","M","N","O","P","q","R","S","T","U","V","W","X","Y","Z"};
 
+    private String names_2[] = {"啊啊啊啊","都是肥肉","啊大哥刚才","八宝饭","孙悟空","猪八戒","我待人","贾宝玉","林黛玉","薛宝钗"};
+
     private List<String> dateList;
 
     @Override
@@ -99,6 +102,29 @@ public class MainActivity extends AppCompatActivity {
         myLinkHandle = new MyLinkHandle();
         mainAdapter = new MainAdapter(this, dateList,taitouRecyclerview,myLinkHandle);
         mainRecyclerview.setAdapter(mainAdapter);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dateList.clear();
+                for (int i = 0; i < names_2.length; i++) {
+                    dateList.add(names_2[i]);
+                }
+
+                Collections.sort(dateList, new Comparator<String>() {
+
+                    public int compareByFirstLetter(String str1, String str2,Utils.ELetterType type) {
+                        return Utils.getPinYinFirstLetter(str1, type).compareTo(Utils.getPinYinFirstLetter(str2, type));
+                    }
+
+                    @Override
+                    public int compare(String o1, String o2) {
+                        return compareByFirstLetter(o1,o2, Utils.ELetterType.LETTER_ONLY_CHARACTER);
+                    }
+                });
+                mainAdapter.updateData(dateList);
+            }
+        },8000);
     }
 
     public class MyLinkHandle extends AbsLinkHandle<TaiTouViewHolder> {
@@ -203,14 +229,14 @@ public class MainActivity extends AppCompatActivity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if(holder instanceof MainTaitouViewHolder) {
                 MainTaitouViewHolder viewHolder = (MainTaitouViewHolder) holder;
-                HeadModel model = (HeadModel) mDataList.get(position);
+                HeadModel model = (HeadModel) getDataList().get(position);
                 viewHolder.textView.setText((String)model.getData());
                 viewHolder.divide.setVisibility(View.GONE);
             }else if(holder instanceof MainNormalViewHolder) {
                 MainNormalViewHolder viewHolder = (MainNormalViewHolder) holder;
-                String model = (String) mDataList.get(position);
+                String model = (String) getDataList().get(position);
                 viewHolder.textView.setText(model);
-                if(mHeadPosList.contains(position+1) || position == getItemCount() - 1) {
+                if(getHeadPosList().contains(position+1) || position == getItemCount() - 1) {
                     viewHolder.divide.setVisibility(View.GONE);
                 }else {
                     viewHolder.divide.setVisibility(View.VISIBLE);
@@ -230,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemViewType(int position) {
-            if(mHeadPosList.contains(position)) {
+            if(getHeadPosList().contains(position)) {
                 return TAITOU_ITEM;
             }
             return NORMAL_ITEM;

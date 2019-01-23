@@ -23,8 +23,9 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
     private RecyclerView mMainRecyclerView;
     private TaitouAdapter mTaitouAdapter;
 
-    protected List<Object> mDataList;
-    protected List<Integer> mHeadPosList;
+    private List<Object> mDataList;
+    private List<Integer> mHeadPosList;
+    private List<HeadModel> mHeadModelList;
     private boolean mTaitouTouch;
 
     private MainOnScrollListener mMainScrollListener;
@@ -37,6 +38,7 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
         mOtherRecyclerView = otherRecyclerView;
         mDataList = new ArrayList<>();
         mHeadPosList = new ArrayList<>();
+        mHeadModelList = new ArrayList<>();
 
         vhandleData(list);
 
@@ -49,14 +51,13 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
         return mDataList;
     }
 
+    public void updateData(List newList) {
+        vhandleData(newList);
+        notifyDataSetChanged();
+    }
+
     public List<HeadModel> getHeadList() {
-        List<HeadModel> list = new ArrayList<>();
-        for(int i = 0 ; i < mDataList.size() ; i++) {
-            if(mDataList.get(i) instanceof HeadModel) {
-                list.add((HeadModel) mDataList.get(i));
-            }
-        }
-        return list;
+        return mHeadModelList;
     }
 
     public HeadModel getCurrentHeadModel() {
@@ -84,12 +85,25 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
      * @param list
      */
     public void vhandleData(List list) {
+        mDataList.clear();
+        mHeadPosList.clear();
+        mHeadModelList.clear();
         for(int i = 0 ; i < list.size() ; i++) {
             Object object = isHeadData(list.get(i));
             if(object != null) {
                 setHeadData(object);
             }
             mDataList.add(list.get(i));
+        }
+
+        for(int i = 0 ; i < mDataList.size() ; i++) {
+            if(mDataList.get(i) instanceof HeadModel) {
+                mHeadModelList.add((HeadModel) mDataList.get(i));
+            }
+        }
+
+        if(mTaitouAdapter != null) {
+            mTaitouAdapter.updateData();
         }
     }
 
@@ -138,15 +152,22 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
     }
 
     private class TaitouAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
-        private List<HeadModel> mDateList;
+        private List<HeadModel> mOtherDataList;
         private HeadModel mHeadModel;
         private HeadModel mPreHeadModel;
 
         public TaitouAdapter(List<HeadModel> list) {
-            mDateList = list;
+            mOtherDataList = list;
             if(mLinkHandle != null) {
-                mLinkHandle.getOtherData(mDateList);
+                mLinkHandle.getOtherData(mOtherDataList);
             }
+        }
+
+        public void updateData() {
+            if(mLinkHandle != null) {
+                mLinkHandle.getOtherData(mOtherDataList);
+            }
+            notifyDataSetChanged();
         }
 
         public HeadModel getCurrentHeadModel() {
@@ -156,8 +177,8 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
         public void setOtherHeadModel(HeadModel headModel) {
             mHeadModel = headModel;
             if(mPreHeadModel != mHeadModel) {
-                final int preIndex = mDateList.indexOf(mPreHeadModel);
-                final int currentIndex = mDateList.indexOf(mHeadModel);
+                final int preIndex = mOtherDataList.indexOf(mPreHeadModel);
+                final int currentIndex = mOtherDataList.indexOf(mHeadModel);
                 notifyItemChanged(preIndex);
                 notifyItemChanged(currentIndex);
 
@@ -166,7 +187,7 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
         }
 
         public List<HeadModel> getData() {
-            return mDateList;
+            return mOtherDataList;
         }
 
         @Override
@@ -180,14 +201,14 @@ public abstract class LinkAdapter<T extends RecyclerView.ViewHolder> extends Rec
         @Override
         public void onBindViewHolder(T holder, int position) {
             if(mLinkHandle != null) {
-                mLinkHandle.onOtherBindViewHolder(holder,position,mDateList,mHeadModel);
+                mLinkHandle.onOtherBindViewHolder(holder,position,mOtherDataList,mHeadModel);
             }
         }
 
         @Override
         public int getItemCount() {
-            if(mDateList != null) {
-                return mDateList.size();
+            if(mOtherDataList != null) {
+                return mOtherDataList.size();
             }
             return 0;
         }
